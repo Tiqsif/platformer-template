@@ -10,17 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bb43cb574f65d54469080c25df8c2cee, type: 3}
-  m_Name: PlayerMovementStats
+  m_Name: SnappyMovementStats
   m_EditorClassIdentifier: 
-  maxWalkSpeed: 15
-  groundAcceleration: 5
-  groundDeceleration: 5
+  showDebug: 1
+  maxWalkSpeed: 12
+  groundAcceleration: 20
+  groundDeceleration: 30
   airAcceleration: 5
   airDeceleration: 5
   groundLayer:
     serializedVersion: 2
-    m_Bits: 128
-  groundCheckDistance: 0.02
+    m_Bits: 129
+  groundCheckDistance: 0.04
   headCheckDistance: 0.01
   headWidth: 1
-  showDebug: 1
+  jumpHeight: 4.5
+  jumpHeightCompensation: 1.054
+  timeToJumpApex: 0.35
+  gravityOnReleaseMultiplier: 2
+  maxFallSpeed: 25
+  maxJumpCount: 2
+  timeForUpwardsCancel: 0.05
+  apexThreshold: 0.9
+  apexHangTime: 0.03
+  jumpBufferTime: 0.1
+  cayoteTime: 0.8

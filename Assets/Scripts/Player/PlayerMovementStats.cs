@@ -20,14 +20,14 @@ public class PlayerMovementStats : ScriptableObject
 
     [Header("Jump")]
     public float jumpHeight = 6f;
-    [Range(1f,1.1f)] public float jumpHeightCompensation = 1.054f;
+    [Range(1f,1.1f)] public float jumpHeightCompensation = 1.054f; // to adjust the jump height
     public float timeToJumpApex = 0.4f;
     [Range(0.01f, 5f)] public float gravityOnReleaseMultiplier = 2f;
     public float maxFallSpeed = 25f;
     [Range(1,5)] public int maxJumpCount = 2;
 
     [Header("JumpCancel")]
-    [Range(0.02f,0.3f)] public float jumpCancelWindow = 0.05f;
+    [Range(0.02f,0.3f)] public float timeForUpwardsCancel = 0.05f;
 
     [Header("JumpApex")]
     [Range(0.5f, 1f)] public float apexThreshold = 0.9f;
@@ -39,13 +39,14 @@ public class PlayerMovementStats : ScriptableObject
     [Header("CayoteTime")]
     [Range(0.0f, 1f)] public float cayoteTime = 0.1f;
 
+    /*
     [Header("JumpVisualization")]
     public bool showArc;
     public bool stopOnCollision;
     public bool drawRight;
     [Range(5,100)] public int arcResolution = 20;
     [Range(0,500)] public int visualizationSteps = 90;
-
+    */
     public float Gravity { get; private set; }
     public float InitialJumpVelocity { get; private set; }
     public float AdjustedJumpHeight { get; private set; }
