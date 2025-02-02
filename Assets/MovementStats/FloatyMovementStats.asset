@@ -17,7 +17,7 @@ MonoBehaviour:
   groundAcceleration: 4
   groundDeceleration: 4
   airAcceleration: 8
-  airDeceleration: 3
+  airDeceleration: 2.8
   groundLayer:
     serializedVersion: 2
     m_Bits: 129

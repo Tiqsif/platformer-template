@@ -33,6 +33,10 @@ public class WallScaler : MonoBehaviour
 
     private void ApplySizes()
     {
+        if (_spriteRenderer == null || _boxCollider == null)
+        {
+            return;
+        }
         _spriteRenderer.size = new Vector2(sizeX, sizeY);
         _boxCollider.size = new Vector2(sizeX, sizeY);
 

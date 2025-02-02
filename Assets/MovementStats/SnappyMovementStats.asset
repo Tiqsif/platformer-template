@@ -14,19 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showDebug: 1
   maxWalkSpeed: 12
-  groundAcceleration: 20
-  groundDeceleration: 30
-  airAcceleration: 5
-  airDeceleration: 5
+  groundAcceleration: 25
+  groundDeceleration: 15
+  airAcceleration: 10
+  airDeceleration: 10
   groundLayer:
     serializedVersion: 2
     m_Bits: 129
   groundCheckDistance: 0.04
   headCheckDistance: 0.01
   headWidth: 1
-  jumpHeight: 4.5
+  jumpHeight: 5
   jumpHeightCompensation: 1.054
-  timeToJumpApex: 0.35
+  timeToJumpApex: 0.32
   gravityOnReleaseMultiplier: 2
   maxFallSpeed: 25
   maxJumpCount: 2

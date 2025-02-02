@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -6,8 +7,16 @@ public class PlayerMovement : MonoBehaviour
     public PlayerMovementStats movementStats;
     [SerializeField] private Collider2D _feetCollider;
     [SerializeField] private Collider2D _bodyCollider;
-
+    [SerializeField] private CinemachineImpulseSource _impulseSource;
+    [SerializeField] private PlayerAnimationManager _animationManager;
     private Rigidbody2D _rb;
+
+    [Header("AudioClips")]
+    [SerializeField] private AudioClip _jumpSFX;
+    [SerializeField] private AudioClip _doubleJumpSFX;
+    [SerializeField] private AudioClip _landSFX;
+    [SerializeField] private AudioClip _headBumpSFX;
+    [SerializeField] private AudioClip _dashSFX;
 
     // movement
     private Vector2 _moveVelocity;
@@ -40,20 +49,44 @@ public class PlayerMovement : MonoBehaviour
     // cayote time
     private float _coyoteTimer;
 
+    private float _fallHeight;
+
+    private float _fallSpeedYDampingChangeThreshold;
+
     private void Awake()
     {
         isFacingRight = true;
         _rb = GetComponent<Rigidbody2D>();
+        _impulseSource = GetComponent<CinemachineImpulseSource>();
+        _animationManager = GetComponent<PlayerAnimationManager>();
+    }
+    private void Start()
+    {
+        _fallSpeedYDampingChangeThreshold = CameraManager.Instance.fallSpeedYDampingChangeThreshold;
     }
 
     private void Update()
     {
         CountTimers();
         JumpChecks();
+
+        if (_rb.linearVelocityY < _fallSpeedYDampingChangeThreshold && !CameraManager.Instance.isLerpingYDamping && !CameraManager.Instance.lerpedFromPlayerFall)
+        {
+            CameraManager.Instance.LerpYDamping(true);
+        }
+
+        if(_rb.linearVelocityY >= 0f && !CameraManager.Instance.isLerpingYDamping && CameraManager.Instance.lerpedFromPlayerFall)
+        {
+            CameraManager.Instance.lerpedFromPlayerFall = false;
+            CameraManager.Instance.LerpYDamping(false);
+        }
+        _animationManager.Tick(_rb.linearVelocityX, movementStats.maxWalkSpeed, _isGrounded);
     }
     private void FixedUpdate()
     {
         CollisionChecks();
+
+        // TODO: if not dashing, jump or move
         Jump();
         if (_isGrounded)
         {
@@ -165,6 +198,7 @@ public class PlayerMovement : MonoBehaviour
                 _isFastFalling = true;
                 _fastFallReleaseSpeed = VerticalVelocity;
             }
+            SFXManager.Instance.PlaySFX(_jumpSFX);
         }
 
         // double jump
@@ -172,12 +206,16 @@ public class PlayerMovement : MonoBehaviour
         {
             _isFastFalling = false;
             InitiateJump(1);
+            CameraShakeManager.Instance.ShakeCamera(_impulseSource);
+            SFXManager.Instance.PlaySFX(_doubleJumpSFX);
         }
         // airjump after cayote time lapsed
         else if (_jumpBufferTimer > 0f && _isFalling && _numberOfJumpsUsed < movementStats.maxJumpCount - 1)
         {
             InitiateJump(2);
             _isFastFalling = false;
+            CameraShakeManager.Instance.ShakeCamera(_impulseSource);
+            SFXManager.Instance.PlaySFX(_doubleJumpSFX);
         }
         
         // landed
@@ -191,6 +229,14 @@ public class PlayerMovement : MonoBehaviour
             _numberOfJumpsUsed = 0;
 
             VerticalVelocity = Physics2D.gravity.y;
+            float fallDistance = _fallHeight - transform.position.y;
+            if (fallDistance > movementStats.AdjustedJumpHeight * 1.5f)
+            {
+                //Debug.Log("Fell from: " + fallDistance);
+                SFXManager.Instance.PlaySFX(_landSFX);
+            }
+            _fallHeight = transform.position.y;
+
         }
 
     }
@@ -214,6 +260,14 @@ public class PlayerMovement : MonoBehaviour
             if (_isHeadBumped)
             {
                 _isFastFalling = true;
+
+                Vector3 impulseDefaultVelocity = _impulseSource.DefaultVelocity;
+                _impulseSource.DefaultVelocity = new Vector3(0.12f, 0f, 0f);
+                CameraShakeManager.Instance.ShakeCamera(_impulseSource);
+                _impulseSource.DefaultVelocity = impulseDefaultVelocity;
+
+                SFXManager.Instance.PlaySFX(_headBumpSFX);
+
             }
             // gravity on ascending
             if (VerticalVelocity >= 0f)
@@ -253,15 +307,19 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
             // gravity on descending
-            else if (!_isFastFalling)
+            else if (!_isFastFalling) // if is jumping && verticalvel < 0 && not fastfalling
             {
                 VerticalVelocity += movementStats.Gravity * movementStats.gravityOnReleaseMultiplier * Time.fixedDeltaTime;
+                // SET HEIGHEST POINT OF JUMP
+                _fallHeight = Mathf.Max(_fallHeight, transform.position.y);
             }
-            else if (VerticalVelocity < 0f)
+            else if (VerticalVelocity < 0f) // if is jumping && verticalvel < 0 && fastfalling
             {
-                if (!_isFalling)
+                if (!_isFalling) // if is jumping and verticalvel < 0 and not falling
                 {
                     _isFalling = true;
+                    // SET HEIGHEST POINT OF JUMP
+                    _fallHeight = Mathf.Max(_fallHeight, transform.position.y);
                 }
             }
         }
