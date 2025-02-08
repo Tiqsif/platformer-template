@@ -33,5 +33,7 @@ MonoBehaviour:
   timeForUpwardsCancel: 0.08
   apexThreshold: 0.9
   apexHangTime: 0.07
-  jumpBufferTime: 0.1
-  cayoteTime: 0.8
+  jumpBufferTime: 0.15
+  cayoteTime: 0.15
+  enableFallMode: 1
+  fallModeRequiredTime: 1.25

@@ -10,7 +10,7 @@ public class InputManager : MonoBehaviour
     public static bool JumpWasReleased;
     public static bool JumpIsHeld;
     public static bool DashWasPressed;
-    public static bool DashIsHeld;
+    //public static bool DashIsHeld;
 
     private InputAction _moveAction;
     private InputAction _jumpAction;
@@ -32,6 +32,6 @@ public class InputManager : MonoBehaviour
         JumpIsHeld = _jumpAction.IsPressed();
 
         DashWasPressed = _dashAction.WasPressedThisFrame();
-        DashIsHeld = _dashAction.IsPressed();
+        //DashIsHeld = _dashAction.IsPressed();
     }
 }

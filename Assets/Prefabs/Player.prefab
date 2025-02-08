@@ -363,12 +363,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1880120661550918566, guid: ac7920a4cfdb9734a98c0e7d6a7686de, type: 3}
+  m_Sprite: {fileID: 4181560189748854998, guid: 99909cbf6f4cc654993d2e76ddb74cc2, type: 3}
   m_Color: {r: 0.08416401, g: 0.794, b: 0.46732143, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.28, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -387,6 +387,7 @@ GameObject:
   - component: {fileID: 2650736745836138942}
   - component: {fileID: 4383093867986229342}
   - component: {fileID: 3870793024762786894}
+  - component: {fileID: 6712197810846896840}
   - component: {fileID: 3509317840526384025}
   - component: {fileID: 3133113238337414765}
   m_Layer: 6
@@ -517,6 +518,7 @@ MonoBehaviour:
   _landSFX: {fileID: 0}
   _headBumpSFX: {fileID: 8300000, guid: e1889d87d848d0c40b7c7ddc2f2c5cf2, type: 3}
   _dashSFX: {fileID: 0}
+  _fallingTimer: 0
 --- !u!114 &3870793024762786894
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -529,8 +531,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac320c27471e08b4f97db0fcc3106087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerMovement: {fileID: 4383093867986229342}
   _playerBody: {fileID: 7378612384541295340}
   _playerFootsteps: {fileID: 8300000, guid: 7fa2e851216387540abc3e597a96ddf2, type: 3}
+  _blinkClip: {fileID: 8300000, guid: a7d0790111776a04ab84506cb7179896, type: 3}
+  _frontEye: {fileID: 2102412806640828253}
+  _backEye: {fileID: 6875855646887134438}
   _bobbingSpeed: 1.75
   _bobbingCurve:
     serializedVersion: 2
@@ -567,6 +573,26 @@ MonoBehaviour:
     m_RotationOrder: 4
   _bobbingAmplitude: 0.1
   maxTiltAngle: 10
+  _BlinkIntervalMinMax: {x: 2, y: 5}
+  _squintThreshold: 1.5
+  _bodyDeformTime: 0.25
+  _bodyDeformPercentage: 0.2
+--- !u!114 &6712197810846896840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4711057971920607665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac22363b3a8bebb4eabbffb277ee6232, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _jumpParticlePrefab: {fileID: 2893721280771755297, guid: 82d58cb32de2da24da4e3b6f4099f25e, type: 3}
+  _landParticlePrefab: {fileID: 2893721280771755297, guid: 82d58cb32de2da24da4e3b6f4099f25e, type: 3}
+  _dashParticlePrefab: {fileID: 0}
+  _doubleJumpParticlePrefab: {fileID: 2893721280771755297, guid: 7205a5106dd916b47b47a97545eeacd3, type: 3}
 --- !u!96 &3509317840526384025
 TrailRenderer:
   serializedVersion: 3
@@ -612,7 +638,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -10
-  m_Time: 1.5
+  m_Time: 1.25
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3

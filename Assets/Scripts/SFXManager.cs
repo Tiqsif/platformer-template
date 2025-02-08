@@ -50,7 +50,7 @@ public class SFXManager : MonoBehaviour
             Destroy(audioSource?.gameObject);
         }
 
-        PlaySFX(clip, volume);
+        PlaySFX(clip, volume:volume);
     }
 
     private IEnumerator DestroyAudioSource(AudioSource audioSource, float t) // invoke this with delay

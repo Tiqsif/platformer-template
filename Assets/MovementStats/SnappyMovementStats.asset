@@ -13,25 +13,47 @@ MonoBehaviour:
   m_Name: SnappyMovementStats
   m_EditorClassIdentifier: 
   showDebug: 1
+  moveThreshold: 0.25
   maxWalkSpeed: 12
   groundAcceleration: 25
   groundDeceleration: 15
   airAcceleration: 10
   airDeceleration: 10
+  wallJumpMoveAcceleration: 5
+  wallJumpMoveDeceleration: 5
   groundLayer:
     serializedVersion: 2
     m_Bits: 129
   groundCheckDistance: 0.04
   headCheckDistance: 0.01
   headWidth: 1
+  wallCheckDistance: 0.125
+  wallCheckHeight: 0.7
   jumpHeight: 5
   jumpHeightCompensation: 1.054
   timeToJumpApex: 0.32
   gravityOnReleaseMultiplier: 2
   maxFallSpeed: 25
   maxJumpCount: 2
+  resetJumpOnWallSlide: 1
   timeForUpwardsCancel: 0.05
   apexThreshold: 0.9
   apexHangTime: 0.03
-  jumpBufferTime: 0.1
-  cayoteTime: 0.8
+  jumpBufferTime: 0.15
+  cayoteTime: 0.125
+  wallSlideSpeed: 5
+  wallSlideDecelerationSpeed: 50
+  wallJumpDirection: {x: -20, y: 6.5}
+  wallJumpPostBufferTime: 0.125
+  wallJumpGravityOnReleaseMultiplier: 1
+  enableDash: 0
+  dashTime: 0.11
+  dashSpeed: 40
+  timeBtwDashesOnGround: 1
+  resetDashOnWallSlide: 1
+  numberOfDashes: 1
+  dashDiagonallyBias: 0.4
+  dashGravityOnReleaseMultiplier: 1
+  dashTimeForUpwardsCancel: 0.027
+  enableFallMode: 1
+  fallModeRequiredTime: 1

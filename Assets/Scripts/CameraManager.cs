@@ -13,14 +13,21 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float _fallYPanTime = 0.35f;
     public float fallSpeedYDampingChangeThreshold = -15f;
 
+    [Header("Player Jump/Fall LookAhead Values")]
+    [SerializeField] private float _fallLookAheadTime = 0.45f;
+    [SerializeField] private float _fallLookAheadTimeChangeDuration = 0.4f;
+
     public bool isLerpingYDamping { get; private set; }
+    public bool isLerpingLookAheadTime { get; private set; }
     public bool lerpedFromPlayerFall { get; set; }
 
     private Coroutine _lerpYPanCoroutine;
+    private Coroutine _lerpLookAheadTimeCoroutine;
     private CinemachineCamera _activeCamera;
     private CinemachinePositionComposer _positionComposer;
 
     private float _normYDampingAmount;
+    private float _normLookAheadTime;
     private void Awake()
     {
         if (Instance == null)
@@ -33,10 +40,10 @@ public class CameraManager : MonoBehaviour
             if (cam.enabled)
             {
                 _activeCamera = cam;
-                _positionComposer = _activeCamera.GetComponent<CinemachinePositionComposer>();
+                _positionComposer = _activeCamera.GetComponent<CinemachinePositionComposer>(); // get active cam
                 if (_positionComposer != null)
                 {
-                    _normYDampingAmount = _positionComposer.Damping.y;
+                    _normYDampingAmount = _positionComposer.Damping.y; // active cams y damping
                 }
                 break;
             }
@@ -49,8 +56,7 @@ public class CameraManager : MonoBehaviour
 
     public void LerpYDamping(bool isPlayerFalling)
     {
-
-        //if (_lerpYPanCoroutine != null) {StopCoroutine(_lerpYPanCoroutine);}
+        if (_lerpYPanCoroutine != null) {StopCoroutine(_lerpYPanCoroutine);}
 
         _lerpYPanCoroutine = StartCoroutine(LerpYRoutine(isPlayerFalling));
     }
@@ -87,5 +93,46 @@ public class CameraManager : MonoBehaviour
 
         isLerpingYDamping = false;
     }
+    #endregion
+
+    #region Lookahead
+
+    public void SetLookAheadTime(bool isPlayerFalling) // TODO: create a separate camera for falling instead of this way
+    {
+        
+        if (_lerpLookAheadTimeCoroutine != null) { StopCoroutine(_lerpLookAheadTimeCoroutine);}
+
+        _lerpLookAheadTimeCoroutine = StartCoroutine(LerpLookAheadRoutine(isPlayerFalling));
+    }
+
+    private IEnumerator LerpLookAheadRoutine(bool isPlayerFalling)
+    {
+        isLerpingLookAheadTime = true;
+        float startLookAheadTime = _positionComposer.Lookahead.Time;
+        float endLookAheadTime;
+
+        if (isPlayerFalling)
+        {
+            endLookAheadTime = _fallLookAheadTime;
+            _positionComposer.Lookahead.IgnoreY = false;
+        }
+        else
+        {
+            endLookAheadTime = _normLookAheadTime;
+            _positionComposer.Lookahead.IgnoreY = true;
+        }
+
+        float elapsedTime = 0f;
+        while (elapsedTime < _fallLookAheadTimeChangeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float lerpedLookAheadY = Mathf.Lerp(startLookAheadTime, endLookAheadTime, elapsedTime / _fallLookAheadTimeChangeDuration);
+            _positionComposer.Lookahead.Time = lerpedLookAheadY;
+            yield return null;
+        }
+
+        isLerpingLookAheadTime = false;
+    }
+
     #endregion
 }
