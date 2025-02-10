@@ -58,6 +58,7 @@ public class PlayerAnimationManager : MonoBehaviour
         PlayerMovement.GroundedChangedEvent += OnGroundedChanged;
         PlayerMovement.HeadBumpedEvent += OnHeadBumped;
         PlayerMovement.JumpStartedEvent += JumpAnimation;
+        PlayerMovement.WallJumpStartedEvent += JumpAnimation;
         PlayerMovement.FellHighEvent += LandAnimation;
     }
 
@@ -66,6 +67,7 @@ public class PlayerAnimationManager : MonoBehaviour
         PlayerMovement.GroundedChangedEvent -= OnGroundedChanged;
         PlayerMovement.HeadBumpedEvent -= OnHeadBumped;
         PlayerMovement.JumpStartedEvent -= JumpAnimation;
+        PlayerMovement.WallJumpStartedEvent -= JumpAnimation;
         PlayerMovement.FellHighEvent -= LandAnimation;
     }
     private void Awake()
@@ -105,7 +107,7 @@ public class PlayerAnimationManager : MonoBehaviour
             // Play footsteps sound when reaching the bottom
             if (bobbingVal <= 0.1f)
             {
-                SFXManager.Instance.KillAndPlaySFX(_playerFootsteps, volume:0.25f);
+                SFXManager.Instance.KillAndPlaySFX(_playerFootsteps, volume:0.15f);
             }
         }
         
@@ -135,6 +137,7 @@ public class PlayerAnimationManager : MonoBehaviour
     private void EyeAnimationsTick()
     {
         bool isHorizontalMoving = Mathf.Abs(_playerMovement.HorizontalVelocity) > 0.1f;
+        bool isVerticalMax = Mathf.Abs(_playerMovement.VerticalVelocity) >= _playerMovement.movementStats.maxFallSpeed * 0.5f;
 
         if (_isHeadBumped)
         {
@@ -142,7 +145,7 @@ public class PlayerAnimationManager : MonoBehaviour
             return;
         }
 
-        if (!_isGrounded)
+        if (isVerticalMax)
         {
             _moveTimer = 0f; // Reset movement timer when falling
             _BlinkTimer = 0f;  // Reset Blink timer
@@ -326,6 +329,7 @@ public class PlayerAnimationManager : MonoBehaviour
             yield return null;
         }
         SetNewBlinkInterval();
+        _isHeadBumped = false; // Reset head bumped so it doesnt have to wait touching the ground
         _isEyeAnimating = false;
     
     }

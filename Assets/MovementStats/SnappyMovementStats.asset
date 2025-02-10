@@ -46,10 +46,10 @@ MonoBehaviour:
   wallJumpDirection: {x: -20, y: 6.5}
   wallJumpPostBufferTime: 0.125
   wallJumpGravityOnReleaseMultiplier: 1
-  enableDash: 0
+  enableDash: 1
   dashTime: 0.11
   dashSpeed: 40
-  timeBtwDashesOnGround: 1
+  timeBtwDashesOnGround: 0.35
   resetDashOnWallSlide: 1
   numberOfDashes: 1
   dashDiagonallyBias: 0.4

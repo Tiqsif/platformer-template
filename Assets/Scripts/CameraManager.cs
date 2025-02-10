@@ -44,6 +44,7 @@ public class CameraManager : MonoBehaviour
                 if (_positionComposer != null)
                 {
                     _normYDampingAmount = _positionComposer.Damping.y; // active cams y damping
+                    _normLookAheadTime = _positionComposer.Lookahead.Time; // active cams lookahead time
                 }
                 break;
             }
@@ -110,7 +111,6 @@ public class CameraManager : MonoBehaviour
         isLerpingLookAheadTime = true;
         float startLookAheadTime = _positionComposer.Lookahead.Time;
         float endLookAheadTime;
-
         if (isPlayerFalling)
         {
             endLookAheadTime = _fallLookAheadTime;

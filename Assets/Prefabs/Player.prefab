@@ -515,9 +515,10 @@ MonoBehaviour:
   _animationManager: {fileID: 3870793024762786894}
   _jumpSFX: {fileID: 8300000, guid: a92b1f6b3c192bf4cb200bd46879d40d, type: 3}
   _doubleJumpSFX: {fileID: 8300000, guid: 024a7ca87379e014386f09ab44cc9474, type: 3}
-  _landSFX: {fileID: 0}
+  _wallJumpSFX: {fileID: 8300000, guid: 5876dd6c392abb24ba1c2162cdcd86d5, type: 3}
+  _landSFX: {fileID: 8300000, guid: 76cedfb7e799a3f45b4b1461a61ded11, type: 3}
   _headBumpSFX: {fileID: 8300000, guid: e1889d87d848d0c40b7c7ddc2f2c5cf2, type: 3}
-  _dashSFX: {fileID: 0}
+  _dashSFX: {fileID: 8300000, guid: d00d5360b2c3f22448980d061e726ca9, type: 3}
   _fallingTimer: 0
 --- !u!114 &3870793024762786894
 MonoBehaviour:

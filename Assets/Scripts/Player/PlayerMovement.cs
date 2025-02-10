@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("AudioClips")]
     [SerializeField] private AudioClip _jumpSFX;
     [SerializeField] private AudioClip _doubleJumpSFX;
+    [SerializeField] private AudioClip _wallJumpSFX;
     [SerializeField] private AudioClip _landSFX;
     [SerializeField] private AudioClip _headBumpSFX;
     [SerializeField] private AudioClip _dashSFX;
@@ -85,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
 
     // falling from high and fallmode
     private float _fallHeight;
-    [SerializeField] private float _fallingTimer;
+    private float _fallingTimer;
 
     private float _fallSpeedYDampingChangeThreshold;
 
@@ -107,6 +108,15 @@ public class PlayerMovement : MonoBehaviour
 
     public delegate void OnLanded();
     public static event OnLanded LandedEvent;
+
+    public delegate void OnWallSlideChange(bool isWallSliding);
+    public static event OnWallSlideChange WallSlideChangeEvent;
+
+    public delegate void OnWallJumpStarted();
+    public static event OnWallJumpStarted WallJumpStartedEvent;
+
+    public delegate void OnDashStarted();
+    public static event OnDashStarted DashStartedEvent;
 
     public delegate void OnFellHigh();
     public static event OnFellHigh FellHighEvent;
@@ -145,12 +155,13 @@ public class PlayerMovement : MonoBehaviour
             CameraManager.Instance.LerpYDamping(false);
         }
 
-        if (_rb.linearVelocityY <= 0 && _fallingTimer <=0f && !CameraManager.Instance.isLerpingLookAheadTime)
+        if (_rb.linearVelocityY <= 0 && _fallingTimer <=0f && !CameraManager.Instance.isLerpingLookAheadTime) // high falling mode
         {
             CameraManager.Instance.SetLookAheadTime(true);
         }
-        else if (_rb.linearVelocityY > 0 && !CameraManager.Instance.isLerpingLookAheadTime)
+        else if (!CameraManager.Instance.isLerpingLookAheadTime)//if (_rb.linearVelocityY > 0 && !CameraManager.Instance.isLerpingLookAheadTime) // jumping
         {
+            //if(!CameraManager.Instance.isLerpingYDamping) CameraManager.Instance.LerpYDamping(false);
             CameraManager.Instance.SetLookAheadTime(false);
         }
         _animationManager.Tick(_rb.linearVelocityX, movementStats.maxWalkSpeed, _isGrounded);
@@ -567,6 +578,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _numberOfJumpsUsed++; // if player falls off of a wall, it counts as the first jump, might change this
             _isWallSliding = false;
+            WallSlideChangeEvent?.Invoke(false);
         }
     }
     private void WallSlide() //fixedupdate
@@ -574,6 +586,9 @@ public class PlayerMovement : MonoBehaviour
         if (_isWallSliding)
         {
             VerticalVelocity = Mathf.Lerp(VerticalVelocity, -movementStats.wallSlideSpeed, movementStats.wallSlideDecelerationSpeed * Time.fixedDeltaTime);
+            _fallingTimer = movementStats.fallModeRequiredTime;
+
+            WallSlideChangeEvent?.Invoke(true);
         }
     }
 
@@ -615,6 +630,7 @@ public class PlayerMovement : MonoBehaviour
         if (InputManager.JumpWasPressed && _wallJumpPostBufferTimer > 0f)
         {
             InitiateWallJump();
+            SFXManager.Instance.KillAndPlaySFX(_wallJumpSFX, volume:0.8f);
 
         }
 
@@ -647,7 +663,9 @@ public class PlayerMovement : MonoBehaviour
 
         HorizontalVelocity = Mathf.Abs(movementStats.wallJumpDirection.x) * dirMultiplier;
 
+        _fallingTimer = movementStats.fallModeRequiredTime;
 
+        WallJumpStartedEvent?.Invoke();
     }
 
     private void WallJump()
@@ -710,6 +728,7 @@ public class PlayerMovement : MonoBehaviour
             else if (!_isWallJumpFastFalling)
             {
                 VerticalVelocity += movementStats.WallJumpGravity * Time.fixedDeltaTime;
+                _fallingTimer -= Time.fixedDeltaTime;
             }
             else if (VerticalVelocity < 0f)
             {
@@ -717,6 +736,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     _isWallJumpFalling = true;
                 }
+                _fallingTimer -= Time.fixedDeltaTime;
             }
         }
 
@@ -773,6 +793,9 @@ public class PlayerMovement : MonoBehaviour
             // ground dash
             if (_isGrounded && _dashOnGroundTimer < 0 && !_isDashing)
             {
+
+                SFXManager.Instance.KillAndPlaySFX(_dashSFX);
+
                 InitiateDash();
 
             }
@@ -780,6 +803,9 @@ public class PlayerMovement : MonoBehaviour
             else if (!_isGrounded && !_isDashing && _numberOfDashesUsed < movementStats.numberOfDashes)
             {
                 _isAirDashing = true;
+
+                SFXManager.Instance.KillAndPlaySFX(_dashSFX);
+
                 InitiateDash();
 
                 // left a wallslide but dashed withing the walljump buffer time
@@ -846,10 +872,14 @@ public class PlayerMovement : MonoBehaviour
         _dashTimer = 0f;
         _dashOnGroundTimer = movementStats.timeBtwDashesOnGround;
 
+        _fallingTimer = movementStats.fallModeRequiredTime;
+
+
         ResetJumpValues();
         ResetWallJumpValues();
         StopWallSlide();
 
+        DashStartedEvent?.Invoke();
     }
     private void Dash()
     {
@@ -912,6 +942,7 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 VerticalVelocity += movementStats.Gravity * movementStats.dashGravityOnReleaseMultiplier * Time.fixedDeltaTime;
+                _fallingTimer -= Time.fixedDeltaTime;
             }
         }
     }
